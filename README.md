@@ -1,4 +1,4 @@
-# LLM-RecG
+# LLM-RecG(To be updated)
 
 ---
 Implementation for paper [`LLM-RecG: A Semantic Bias-Aware Framework for Zero-Shot Sequential Recommendation` [RecSys'25]
