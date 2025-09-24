@@ -2,7 +2,7 @@
 
 ---
 Implementation for paper [`LLM-RecG: A Semantic Bias-Aware Framework for Zero-Shot Sequential Recommendation` [RecSys'25]
-
+ 
 - This project introduces a semantic bias-aware framework for zero-shot cross-domain sequential recommendation (ZCDSR), where the goal is to make accurate recommendations in entirely new domains without additional training. While large language models (LLMs) help transfer knowledge across domains, domain semantic bias—differences in language and content between domains—often leads to misaligned item representations and weak generalization. 
 
 - We improve cross-domain alignment at both the item and sequence levels, enabling more reliable and transferable user behavior modeling. Our method significantly boosts zero-shot performance across diverse datasets, offering a scalable and training-free solution to domain adaptation in recommendation systems.
