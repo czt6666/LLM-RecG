@@ -1,4 +1,4 @@
-# LLM-RecG
+# LLM-RecG(To be updated)
 
 ---
 Implementation for paper [`LLM-RecG: A Semantic Bias-Aware Framework for Zero-Shot Sequential Recommendation` [RecSys'25]
@@ -61,7 +61,7 @@ To run this project, follow these two steps:
 #### 1. Run the semantic embedding mapping:
 
 ```bash
-  python semantic_case_study.py --dataset_name amazon_industrial_and_scientific
+  python semantic_embedding_mapping.py --dataset_name amazon_industrial_and_scientific
 ```
 
 #### 2. Run the domain alignment training and evaluation
@@ -78,5 +78,3 @@ To run this project, follow these two steps:
 ```
 This will train the model on the specified source domain and evaluate its generalization to other domains using zero-shot transfer.
 
-
-If you find our work 
