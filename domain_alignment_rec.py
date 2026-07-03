@@ -13,7 +13,7 @@ from models.bert4rec_sem import BERT4Rec
 from models.sasrec_sem import SASRec
 from models.gru_recg import GRU4RecWithDomainAlignment
 from models.model_trainer import train_model_with_alignment, evaluate_model_with_neg_sampling
-from rec_datasets import AmazonUserSequencesDataset, SteamDataset, preprocess
+from rec_datasets import AmazonUserSequencesDataset, SteamDataset
 
 # Setup logging
 logging.basicConfig(
@@ -98,15 +98,27 @@ def sample_auxiliary_domains(device, dataset_name, num_samples=1024):
     aux_datasets = {'amazon_musical_instruments', 'amazon_industrial_and_scientific', 'amazon_video_games', 'steam'}
     aux_datasets.discard(dataset_name)
 
-    sampled_embeddings, sampled_domains = [], []
+    sampled_embeddings, sampled_domains, available_aux = [], [], []
 
     for domain_id, aux_name in enumerate(sorted(aux_datasets)):
+        embedding_path = f"./data/{aux_name}/{aux_name}_embedding_llama3.parquet"
+        if not os.path.exists(embedding_path):
+            logger.warning(f"Skipping auxiliary domain without embeddings: {aux_name} ({embedding_path})")
+            continue
         aux_embeddings = load_pretrained_embeddings_from_dataset(aux_name)
         indices = torch.randperm(aux_embeddings.size(0))[:num_samples]
         sampled_embeddings.append(aux_embeddings[indices])
-        sampled_domains.append(torch.full((num_samples,), domain_id, dtype=torch.long))
+        sampled_domains.append(torch.full((len(indices),), len(available_aux), dtype=torch.long))
+        available_aux.append(aux_name)
 
-    return torch.cat(sampled_embeddings).to(device), torch.cat(sampled_domains).to(device), sorted(aux_datasets)
+    if not sampled_embeddings:
+        source_embeddings = load_pretrained_embeddings_from_dataset(dataset_name)
+        indices = torch.randperm(source_embeddings.size(0))[:num_samples]
+        sampled_embeddings.append(source_embeddings[indices])
+        sampled_domains.append(torch.zeros((len(indices),), dtype=torch.long))
+        available_aux.append(dataset_name)
+
+    return torch.cat(sampled_embeddings).to(device), torch.cat(sampled_domains).to(device), available_aux
 
 
 def main():
@@ -139,7 +151,7 @@ def main():
             optimizer=optimizer,
             num_epochs=args.num_epochs,
             num_items=num_items,
-            num_domains=len(aux_dataset_list),
+            num_aux_domains=len(aux_dataset_list),
             sampled_domains=sampled_domains,
             sampled_embeddings=sampled_embeddings,
             alpha=0.01,
